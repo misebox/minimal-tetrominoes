@@ -114,6 +114,7 @@ proc main() =
   var t = epochTime()
   var msec: int = 0
   var score = 0
+  var pause = false
 
   proc display() =
     nb.clear()
@@ -121,12 +122,11 @@ proc main() =
     for y, line in pile.merged(mino):
       nb.print(0, y+2, line)
     nb.print(0, h+2, "score: " & $score)
-    nb.print(0, h+3, "lhj:→ ← ↓, Kk:rotate LR, Space: drop")
+    nb.print(0, h+3, "ESC:quit, lhj:→ ← ↓, Kk:rotate LR, Space:drop, p:pause")
     nb.present()
     sleep(10)
 
   while true:
-    display()
     evt = nb.peekEvent(1000)
     case evt.kind:
       of EventType.Key:
@@ -145,10 +145,11 @@ proc main() =
           of 'j': discard mino.move(pile, 0, 1)
           of 'h': discard mino.move(pile, -1, 0)
           of 'l': discard mino.move(pile, 1, 0)
+          of 'p': pause = not pause
           else: discard
       else: discard
     let now = epochTime()
-    msec += ((now - t) * 1000).int
+    if not pause: msec += ((now - t) * 1000).int
     t = now
     if msec > 1000:
       msec -= 1000
@@ -156,5 +157,6 @@ proc main() =
         pile.pileUp(mino)
         score += pile.clearLine()
         mino = createMino()
+    if not pause: display()
 
 main()
