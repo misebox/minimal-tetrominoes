@@ -11,6 +11,6 @@ bin           = @["minimal_tetrominoes"]
 
 # Dependencies
 
-requires "nim >= 1.3.5"
+requires "nim >= 1.2.0"
 requires "illwill"
 requires "https://github.com/dom96/nimbox"
