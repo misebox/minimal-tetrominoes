@@ -103,17 +103,24 @@ proc main() =
 
   proc display() =
     nb.clear()
-    nb.print(0, 0, "Tetrominoes")
+    let tbw = tbWidth()
+    let sx = (tbw - w) div 2
+    nb.print(sx, 0, "Tetrominoes")
     if state == GameState.pause:
-      nb.print(0, 1, "---- PAUSE ----")
-      nb.print(0, 2, "[ Hit P key ]")
+      nb.print(sx, 1, "-- PAUSE --")
+      nb.print(sx, 2, "[Hit P key]")
     elif state == GameState.over:
-      nb.print(0, 1, "---- GAMEOVER----")
-      nb.print(0, 2, "[ Hit ENTER key ]")
+      nb.print(sx, 1, "-GAME OVER-")
+      nb.print(sx, 2, "[Hit ENTER]")
     for y, line in pile.merged(mino):
-      nb.print(0, y+3, line)
-    nb.print(0, h+3, "score: " & $score)
-    nb.print(0, h+4, "ESC:quit, lhj:→ ← ↓, Kk:rotate LR, Space:drop, p:pause")
+      nb.print(sx, y+3, line)
+    nb.print(sx, h+3, "SCORE: " & $score)
+    nb.print(sx, h+5, "ESC: QUIT")
+    nb.print(sx, h+6, "← , ↓ , → : H, J, L")
+    nb.print(sx, h+7, "DROP: SPACE")
+    nb.print(sx, h+8, "ROTATE L, R: SHIFT+K, K")
+    nb.print(sx, h+9, "PAUSE: P")
+    nb.print(sx, h+10, "BACK TO GAME: ENTER")
     nb.present()
     sleep(10)
 

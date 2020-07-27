@@ -3,31 +3,38 @@
 tetrominoes written in nim
 
 ```
-Tetrominoes
+    Tetrominoes
 
-|          |
-|          |
-|          |
-|          |
-|          |
-|      #   |
-|      ##  |
-|       #  |
-|          |
-|          |
-|          |
-|          |
-|          |
-|          |
-|          |
-|  ##      |
-|  ####    |
-|  ####    |
-| ##### #  |
-| ### #####|
-|==========|
-score: 0
-ESC:quit, lhj:→ ← ↓, Kk:rotate LR, Space: drop
+
+    |          |
+    |          |
+    |          |
+    |   ####   |
+    |          |
+    |          |
+    |          |
+    |          |
+    |          |
+    |          |
+    |          |
+    |          |
+    |          |
+    |          |
+    |          |
+    |  ##      |
+    |  ####    |
+    |  ####    |
+    | ##### #  |
+    | ### #####|
+    |==========|
+    SCORE: 450
+
+    ESC: QUIT
+    ← , ↓ , → : H, J, L
+    DROP: SPACE
+    ROTATE L, R: SHIFT+K, K
+    PAUSE: P
+    BACK TO GAME: ENTER
 ```
 
 ## Requirements
