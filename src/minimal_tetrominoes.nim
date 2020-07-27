@@ -8,6 +8,7 @@ const
 
 type
   MinoState {.pure.} = enum falling landing landed
+  GameState {.pure.} = enum playing pause over
   Pile = object
     lines: seq[string]
   Mino = object
@@ -91,33 +92,58 @@ proc main() =
   randomize()
   var nb = newNimbox()
   defer: nb.shutdown()
-  var pile = newPile()
-  var mino = createMino()
   var evt: Event
   var t = epochTime()
   var msec: int = 0
-  var score = 0
-  var pause = false
+
+  var pile: Pile
+  var mino: Mino
+  var score: int
+  var state: GameState
 
   proc display() =
     nb.clear()
     nb.print(0, 0, "Tetrominoes")
+    if state == GameState.pause:
+      nb.print(0, 1, "---- PAUSE ----")
+      nb.print(0, 2, "[ Hit P key ]")
+    elif state == GameState.over:
+      nb.print(0, 1, "---- GAMEOVER----")
+      nb.print(0, 2, "[ Hit ENTER key ]")
     for y, line in pile.merged(mino):
-      nb.print(0, y+2, line)
-    nb.print(0, h+2, "score: " & $score)
-    nb.print(0, h+3, "ESC:quit, lhj:→ ← ↓, Kk:rotate LR, Space:drop, p:pause")
+      nb.print(0, y+3, line)
+    nb.print(0, h+3, "score: " & $score)
+    nb.print(0, h+4, "ESC:quit, lhj:→ ← ↓, Kk:rotate LR, Space:drop, p:pause")
     nb.present()
     sleep(10)
 
   proc drop(m: var Mino, p: Pile) =
     while m.move(p, 0, 1): display()
 
+  proc pause() =
+    if state == GameState.playing: state = GameState.pause
+    elif state == GameState.pause: state = GameState.playing
+
+  proc gameover() =
+    state = GameState.over
+
+  proc initialize() =
+    state = GameState.playing
+    mino = createMino()
+    pile = newPile()
+    score = 0
+
+  initialize()
+
   while true:
     evt = nb.peekEvent(1000)
     case evt.kind:
       of EventType.Key:
         if evt.sym == Symbol.Escape: break
-        elif evt.sym == Symbol.Space: mino.drop(pile)
+        elif evt.sym == Symbol.Enter and state == GameState.over:
+          initialize()
+        elif evt.sym == Symbol.Space and state == GameState.playing:
+          mino.drop(pile)
         case evt.ch:
           of 'd': mino.drop(pile)
           of 'f': mino.drop(pile)
@@ -126,20 +152,22 @@ proc main() =
           of 'j': discard mino.move(pile, 0, 1)
           of 'h': discard mino.move(pile, -1, 0)
           of 'l': discard mino.move(pile, 1, 0)
-          of 'p': pause = not pause
+          of 'p': pause()
           else: discard
       else: discard
 
-    if pause: continue
-    let now = epochTime()
-    msec += ((now - t) * 1000).int
-    t = now
-    if msec > 1000:
-      msec -= 1000
-      if not mino.move(pile, 0, 1):
-        pile.pileUp(mino)
-        score += pile.clearLine()
-        mino = createMino()
+    if state == GameState.playing:
+      let now = epochTime()
+      msec += ((now - t) * 1000).int
+      t = now
+      if msec > 1000:
+        msec -= 1000
+        if not mino.move(pile, 0, 1):
+          pile.pileUp(mino)
+          score += pile.clearLine()
+          mino = createMino()
+          if mino.collide(pile, 0, 0):
+            gameover()
     display()
 
 main()
